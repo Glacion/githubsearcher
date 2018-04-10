@@ -2,4 +2,5 @@
     <string name="app_name">Github Searcher</string>
     <string name="enter_query">Enter query</string>
     <string name="search">Search</string>
+    <string name="sample">Sample</string>
 </resources>

@@ -1,5 +1,8 @@
 package com.glacion.githubsearcher.recycler;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,7 +19,7 @@ import java.util.List;
  */
 public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.ViewHolder> {
 
-    private List<Repo> repoList;
+    final private List<Repo> repoList;
 
     public RepoAdapter(List<Repo> repoList) {
         this.repoList = repoList;
@@ -40,9 +43,19 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.ViewHolder> {
      * @param position Position of the item in the list.
      */
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         final Repo repo = repoList.get(position);
         holder.fullName.setText(repo.getFullName());
+        holder.description.setText(repo.getDescription());
+        holder.forks.setText(String.valueOf(repo.getForks()));
+        holder.stars.setText(String.valueOf(repo.getStars()));
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openRepo(repo.getUrl(), v.getContext());
+            }
+        };
+        holder.itemView.setOnClickListener(listener);
     }
 
     @Override
@@ -55,12 +68,25 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.ViewHolder> {
      * Modify the constructor when you'll add new attributes to your views.
      */
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView fullName;
-
+        final TextView fullName;
+        final TextView description;
+        final TextView forks;
+        final TextView stars;
         ViewHolder(View itemView) {
             super(itemView);
 
             fullName = itemView.findViewById(R.id.full_name);
+            description = itemView.findViewById(R.id.description);
+            forks = itemView.findViewById(R.id.forks);
+            stars = itemView.findViewById(R.id.stars);
+        }
+    }
+
+    private void openRepo (String url, Context context) {
+        Uri uri = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(intent);
         }
     }
 }

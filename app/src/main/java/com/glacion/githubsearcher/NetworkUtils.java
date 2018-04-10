@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 import java.util.List;
 
-public class NetworkUtils {
+class NetworkUtils {
     private static final String GITHUB_REPO_URL = "https://api.github.com/search";
     private static final String REPO_PATH = "repositories";
     private static final String PARAM_QUERY = "q";
@@ -44,7 +44,15 @@ public class NetworkUtils {
         JSONArray jsonArray = object.getJSONArray("items");
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject item = jsonArray.getJSONObject(i);
-            Repo repo = new Repo(item.getString("full_name"));
+            String description = item.getString("description");
+            // Ensures that the description isn't null.
+            description = description.equals("null") ? "No Description Provided" : description;
+            Repo repo = new Repo(
+                    item.getString("full_name"),
+                    description,
+                    item.getString("html_url"),
+                    item.getInt("forks"),
+                    item.getInt("stargazers_count"));
             list.add(repo);
         }
         return list;

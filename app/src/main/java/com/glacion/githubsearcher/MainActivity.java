@@ -19,6 +19,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.glacion.githubsearcher.recycler.ItemOffset;
 import com.glacion.githubsearcher.recycler.Repo;
 import com.glacion.githubsearcher.recycler.RepoAdapter;
 
@@ -29,7 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    RequestQueue requestQueue;
+    private RequestQueue requestQueue;
     private RecyclerView recyclerView;
     private List<Repo> repoList;
     private TextView inputField;
@@ -39,11 +40,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        requestQueue = VolleyCore.getCore(getApplicationContext()).getRequestQueue();
+        requestQueue = VolleyCore.getCore(getApplicationContext().getCacheDir()).getRequestQueue();
         recyclerView = findViewById(R.id.repo_view);
         inputField = findViewById(R.id.query_input);
         progressBar = findViewById(R.id.progress_bar);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        ItemOffset offset = new ItemOffset(this, R.dimen.side_margin);
+        recyclerView.addItemDecoration(offset);
     }
 
     // Menu related stuff.
