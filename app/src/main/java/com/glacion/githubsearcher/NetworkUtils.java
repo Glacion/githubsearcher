@@ -16,7 +16,7 @@ class NetworkUtils {
     private static final String REPO_PATH = "repositories";
     private static final String PARAM_QUERY = "q";
     private static final String PARAM_SORT = "sort";
-    private static final String SORT_BY = "stars";
+    private static final String PARAM_ORDER = "order";
 
     // TODO Allow more options when querying.
     /**
@@ -24,11 +24,11 @@ class NetworkUtils {
      * @param query Repo name to be searched.
      * @return A URL that can be queried
      */
-    public static String buildURL(String query) {
+    public static String buildURL(String query, String sort) {
         Uri builtUri = Uri.parse(GITHUB_REPO_URL).buildUpon()
                 .appendPath(REPO_PATH)
                 .appendQueryParameter(PARAM_QUERY, query)
-                .appendQueryParameter(PARAM_SORT, SORT_BY)
+                .appendQueryParameter(PARAM_SORT, sort)
                 .build();
         return builtUri.toString();
     }

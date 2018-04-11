@@ -27,6 +27,7 @@ import com.glacion.githubsearcher.recycler.RepoAdapter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -81,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.reverse_check:
                 item.setChecked(!reverseChecked);
                 reverseChecked = !reverseChecked;
+                preferences.edit()
+                        .putBoolean(getString(R.string.repo_reverse_key), reverseChecked)
+                        .apply();
                 return true;
             case R.id.repo_sort_forks:
                 onSortSelect(item, getString(R.string.forks));
@@ -101,8 +105,11 @@ public class MainActivity extends AppCompatActivity {
         editor.putString(getString(R.string.repo_sort_key), selection);
         editor.apply();
     }
+
     private void search() {
         String query = inputField.getText().toString();
+        String sort = preferences.getString(getString(R.string.repo_sort_key),
+                getString(R.string.stars));
         if (query.equals(""))
             Toast.makeText(getApplicationContext(), "Empty query", Toast.LENGTH_SHORT).show();
         else if (!isNetworkAvailable())
@@ -112,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             // The list will be created from scratch to avoid the same list being used by
             // multiple queries.
             repoList = new LinkedList<>();
-            String url = NetworkUtils.buildURL(inputField.getText().toString());
+            String url = NetworkUtils.buildURL(inputField.getText().toString(), sort);
             JsonObjectRequest request = makeRequest(url);
             requestQueue.add(request);
         }
@@ -122,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
      * @param response A Json Object retrieved from the operation in the background.
      */
     private void onSuccess(JSONObject response) {
+        boolean order = preferences.getBoolean(getString(R.string.repo_reverse_key), false);
         try {
             repoList = NetworkUtils.parseJson(response);
         }catch (JSONException e){
@@ -129,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
                     "Malformed data, please try again",
                     Toast.LENGTH_SHORT).show();
         }
+        if (order) Collections.reverse(repoList);
         recyclerView.setAdapter(new RepoAdapter(repoList));
         progressBar.setVisibility(View.INVISIBLE);
     }
