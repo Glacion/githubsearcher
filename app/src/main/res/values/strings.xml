@@ -3,4 +3,11 @@
     <string name="enter_query">Enter query</string>
     <string name="search">Search</string>
     <string name="sample">Sample</string>
+    <string name="sort_by">Sort By</string>
+    <string name="stars">Stars</string>
+    <string name="forks">Forks</string>
+    <string name="updated">Updated</string>
+    <string name="reverse">Reverse</string>
+    <string name="preference_file_key">com.glacion.githubsearcher.preferences</string>
+    <string name="repo_sort_key">repo_sort_key</string>
 </resources>
