@@ -4,11 +4,16 @@
     <string name="search">Search</string>
     <string name="sample">Sample</string>
     <string name="sort_by">Sort By</string>
-    <string name="stars">Stars</string>
-    <string name="forks">Forks</string>
-    <string name="updated">Updated</string>
-    <string name="reverse">Reverse</string>
+    <string name="stars">stars</string>
+    <string name="forks">forks</string>
+    <string name="updated">updated</string>
+    <string name="stars_UI">Stars</string>
+    <string name="forks_UI">Forks</string>
+    <string name="updated_UI">Updated</string>
+    <string name="increasing">Increasing</string>
     <string name="preference_file_key">com.glacion.githubsearcher.preferences</string>
     <string name="repo_sort_key">repo_sort_key</string>
     <string name="repo_reverse_key">repo_reverse_key</string>
+    <string name="star_icon">Star Icon</string>
+    <string name="fork_icon">Fork Icon</string>
 </resources>

@@ -5,14 +5,14 @@
         <item
             android:id="@+id/repo_sort_stars"
             android:orderInCategory="1"
-            android:title="@string/stars"/>
+            android:title="@string/stars_UI"/>
         <item
             android:id="@+id/repo_sort_forks"
             android:orderInCategory="2"
-            android:title="@string/forks"/>
+            android:title="@string/forks_UI"/>
         <item
             android:id="@+id/repo_sort_updated"
             android:orderInCategory="3"
-            android:title="@string/updated"/>
+            android:title="@string/updated_UI"/>
     </group>
 </menu>
