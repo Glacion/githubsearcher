@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 public class ItemOffset extends RecyclerView.ItemDecoration {
-    private int offset;
+    private final int offset;
 
     private ItemOffset(int offset) {
         this.offset = offset;

@@ -58,8 +58,8 @@
 
             <ImageView
                 android:id="@+id/stars_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_alignTop="@+id/stars"
                 android:layout_toStartOf="@+id/stars"
                 android:contentDescription="@string/star_icon"
@@ -67,8 +67,8 @@
 
             <ImageView
                 android:id="@+id/forks_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_alignTop="@+id/forks"
                 android:layout_toStartOf="@+id/forks"
                 android:contentDescription="@string/fork_icon"

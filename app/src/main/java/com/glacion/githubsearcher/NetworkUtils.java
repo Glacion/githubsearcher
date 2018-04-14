@@ -16,9 +16,7 @@ class NetworkUtils {
     private static final String REPO_PATH = "repositories";
     private static final String PARAM_QUERY = "q";
     private static final String PARAM_SORT = "sort";
-    private static final String PARAM_ORDER = "order";
 
-    // TODO Allow more options when querying.
     /**
      * Build a URL from the query that searches the github repositories and sorts them by stars.
      * @param query Repo name to be searched.

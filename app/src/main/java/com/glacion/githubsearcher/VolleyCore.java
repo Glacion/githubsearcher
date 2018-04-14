@@ -15,7 +15,7 @@ import java.io.File;
 class VolleyCore {
     private static VolleyCore core;
     private RequestQueue requestQueue;
-    private File cacheDir;
+    private final File cacheDir;
 
     /**
      * Since this is a singleton, only constructor is private.
