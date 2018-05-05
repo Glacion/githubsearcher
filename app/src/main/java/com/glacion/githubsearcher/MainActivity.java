@@ -1,13 +1,10 @@
 package com.glacion.githubsearcher;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,14 +17,15 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.glacion.githubsearcher.recycler.ItemOffset;
 import com.glacion.githubsearcher.recycler.Repo;
 import com.glacion.githubsearcher.recycler.RepoAdapter;
+import com.glacion.githubsearcher.util.NetworkUtils;
+import com.glacion.githubsearcher.util.PreferenceHandler;
+import com.glacion.githubsearcher.util.VolleyCore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,9 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Repo> repoList;
     private TextView inputField;
     private ProgressBar progressBar;
-    private boolean reverseChecked = false;
-    private SharedPreferences.Editor editor;
-    private SharedPreferences preferences;
+    private PreferenceHandler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,76 +46,77 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar);
         recyclerView = findViewById(R.id.repo_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        ItemOffset offset = new ItemOffset(this, R.dimen.side_margin);
-        recyclerView.addItemDecoration(offset);
-        preferences = this.getSharedPreferences(
-                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        handler = new PreferenceHandler(this);
     }
 
     // Menu related stuff.
+    // Todo clarify submenu.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        MenuItem sortMenu = menu.findItem(R.id.sort_list);
-        getMenuInflater().inflate(R.menu.submenu_sort, sortMenu.getSubMenu());
-        Menu sortSubMenu = sortMenu.getSubMenu();
-        String sorted = preferences.getString(getString(R.string.repo_sort_key), getString(R.string.stars));
-        if (sorted.equals(getString(R.string.stars)))
-            sortSubMenu.findItem(R.id.repo_sort_stars).setChecked(true);
-        else if (sorted.equals(getString(R.string.forks)))
-            sortSubMenu.findItem(R.id.repo_sort_forks).setChecked(true);
-        else if (sorted.equals(getString(R.string.updated)))
-            sortSubMenu.findItem(R.id.repo_sort_updated).setChecked(true);
+        MenuItem subMenu = menu.findItem(R.id.sort_list); // Submenu for sort elements.
+        getMenuInflater().inflate(R.menu.submenu_sort, subMenu.getSubMenu());
+        MenuItem checkBox = menu.findItem(R.id.reverse_check);
+        checkBox.setChecked(handler.getReverse()); // Check reverse box if necessary.
+        Menu sortMenu = subMenu.getSubMenu();
+        String sortParam = handler.getSort();
+        switch (sortParam) {
+            case "stars":
+                sortMenu.findItem(R.id.repo_sort_stars).setChecked(true);
+                break;
+            case "forks":
+                sortMenu.findItem(R.id.repo_sort_forks).setChecked(true);
+                break;
+            default:
+                sortMenu.findItem(R.id.repo_sort_updated).setChecked(true);
+                break;
+        }
         return true;
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        int id = item.getItemId();
+        switch (id) {
             case R.id.search_button:
                 search();
-                return true;
-            case R.id.reverse_check:
-                item.setChecked(!reverseChecked);
-                reverseChecked = !reverseChecked;
-                preferences.edit()
-                        .putBoolean(getString(R.string.repo_reverse_key), reverseChecked)
-                        .apply();
-                return true;
+                break;
             case R.id.repo_sort_forks:
-                onSortSelect(item, getString(R.string.forks));
-                return true;
-            case R.id.repo_sort_stars:
-                onSortSelect(item, getString(R.string.stars));
-                return true;
+                handler.setSort("forks");
+                item.setChecked(true);
+                break;
             case R.id.repo_sort_updated:
-                onSortSelect(item, getString(R.string.updated));
-                return true;
+                handler.setSort("updated");
+                item.setChecked(true);
+                break;
+            case R.id.repo_sort_stars:
+                handler.setSort("stars");
+                item.setChecked(true);
+                break;
+            case R.id.reverse_check:
+                handler.setReverse(!item.isChecked());
+                item.setChecked(!item.isChecked());
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void onSortSelect(MenuItem item, String selection) {
-        editor = preferences.edit();
-        item.setChecked(true);
-        editor.putString(getString(R.string.repo_sort_key), selection);
-        editor.apply();
-    }
-
     private void search() {
         String query = inputField.getText().toString();
-        String sort = preferences.getString(getString(R.string.repo_sort_key),
-                getString(R.string.stars));
+        String sort = handler.getSort();
+        boolean isIncreasing = handler.getReverse();
         if (query.equals(""))
             Toast.makeText(getApplicationContext(), "Empty query", Toast.LENGTH_SHORT).show();
-        else if (!isNetworkAvailable())
+        else if (!NetworkUtils.isNetworkAvailable(getApplicationContext()))
             Toast.makeText(getApplicationContext(), "Device is not connected", Toast.LENGTH_SHORT).show();
         else {
             progressBar.setVisibility(View.VISIBLE);
             // The list will be created from scratch to avoid the same list being used by
             // multiple queries.
             repoList = new LinkedList<>();
-            String url = NetworkUtils.buildURL(inputField.getText().toString(), sort);
+            String url = NetworkUtils.buildURL(query, sort, isIncreasing);
+            Log.d(getLocalClassName(), url);
             JsonObjectRequest request = makeRequest(url);
             requestQueue.add(request);
         }
@@ -129,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
      * @param response A Json Object retrieved from the operation in the background.
      */
     private void onSuccess(JSONObject response) {
-        boolean order = preferences.getBoolean(getString(R.string.repo_reverse_key), false);
         try {
             repoList = NetworkUtils.parseJson(response);
         }catch (JSONException e){
@@ -137,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
                     "Malformed data, please try again",
                     Toast.LENGTH_SHORT).show();
         }
-        if (order) Collections.reverse(repoList);
         recyclerView.setAdapter(new RepoAdapter(repoList));
         progressBar.setVisibility(View.INVISIBLE);
     }
@@ -170,23 +165,4 @@ public class MainActivity extends AppCompatActivity {
                 (Request.Method.GET, url, null, responseListener, errorListener);
     }
 
-    /**
-     * Checks if the device is connected to a network
-     * @return True if the device is connected.
-     */
-    private boolean isNetworkAvailable() {
-        NetworkInfo activeNetworkInfo = null;
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        }
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
-    }
-
-    @Override
-    protected void onDestroy() {
-        editor.commit();
-        super.onDestroy();
-    }
 }

@@ -5,7 +5,8 @@
         <item
             android:id="@+id/repo_sort_stars"
             android:orderInCategory="1"
-            android:title="@string/stars_UI"/>
+            android:title="@string/stars_UI"
+            />
         <item
             android:id="@+id/repo_sort_forks"
             android:orderInCategory="2"

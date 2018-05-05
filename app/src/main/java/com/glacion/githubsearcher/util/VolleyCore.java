@@ -1,4 +1,4 @@
-package com.glacion.githubsearcher;
+package com.glacion.githubsearcher.util;
 
 import com.android.volley.Cache;
 import com.android.volley.Network;
@@ -12,13 +12,14 @@ import java.io.File;
 /**
  * A singleton which wraps a Volley request queue.
  */
-class VolleyCore {
+public class VolleyCore {
     private static VolleyCore core;
     private RequestQueue requestQueue;
     private final File cacheDir;
 
     /**
      * Since this is a singleton, only constructor is private.
+     *
      */
     private VolleyCore(File cacheDir) {
         this.cacheDir = cacheDir;
