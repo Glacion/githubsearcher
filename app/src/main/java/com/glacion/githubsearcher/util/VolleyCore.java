@@ -26,6 +26,7 @@ public class VolleyCore {
     }
 
     private RequestQueue makeRequestQueue() {
+        // Create and initialize a Volley Queue.
         Cache cache = new DiskBasedCache(cacheDir, 1024*1024);
         Network network = new BasicNetwork(new HurlStack());
         requestQueue = new RequestQueue(cache, network);

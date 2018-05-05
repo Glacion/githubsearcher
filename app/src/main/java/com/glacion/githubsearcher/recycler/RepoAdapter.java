@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.glacion.githubsearcher.R;
 
@@ -21,6 +22,10 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.ViewHolder> {
 
     final private List<Repo> repoList;
 
+    /**
+     * Create adapter with the list of our repos.
+     * @param repoList The list which contains our repositories.
+     */
     public RepoAdapter(List<Repo> repoList) {
         this.repoList = repoList;
     }
@@ -82,11 +87,21 @@ public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.ViewHolder> {
         }
     }
 
+    /**
+     * Sends an implicit intent to the user preferred app with URL to open a repo in the browser,
+     * FastHub, etc.
+     * @param url URL to open in the preferred app.
+     * @param context Required to check if the device can perform the operation.
+     */
     private void openRepo (String url, Context context) {
         Uri uri = Uri.parse(url);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        // Checks if there is an appropriate app which can perform this request, not checking this
+        // will lead to an application crash.
         if (intent.resolveActivity(context.getPackageManager()) != null) {
             context.startActivity(intent);
+        }else {
+            Toast.makeText(context, R.string.no_app_for_browser, Toast.LENGTH_SHORT).show();
         }
     }
 }

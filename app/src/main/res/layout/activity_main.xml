@@ -16,6 +16,7 @@
         android:max="100"
         android:layout_marginTop="@dimen/side_margin"
         android:visibility="invisible"/>
+
     <EditText
         android:id="@+id/query_input"
         android:layout_width="match_parent"
@@ -24,7 +25,8 @@
         android:layout_marginLeft="@dimen/side_margin"
         android:layout_marginRight="@dimen/side_margin"
         android:hint="@string/enter_query"
-        android:inputType="text" />
+        android:inputType="text"
+        android:imeOptions="actionDone"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/repo_view"

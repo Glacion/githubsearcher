@@ -10,8 +10,9 @@
     <string name="increasing">Increasing</string>
     <string name="star_icon">Star Icon</string>
     <string name="fork_icon">Fork Icon</string>
+    <string name="no_app_for_browser">There are no apps that can perform this operation!</string>
 
-    <!--NOT UI related.-->
+    <!--NOT UI related. Used for SharedPreferences-->
     <string name="stars">stars</string>
     <string name="forks">forks</string>
     <string name="updated">updated</string>
